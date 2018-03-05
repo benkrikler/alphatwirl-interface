@@ -70,7 +70,6 @@ def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc
         dir = tmpdir,
         python_modules = list(user_modules),
         exclusions = ["*{}*".format(tmpdir)]
-
     )
     dropbox = alphatwirl.concurrently.TaskPackageDropbox(
         workingArea=workingArea,
