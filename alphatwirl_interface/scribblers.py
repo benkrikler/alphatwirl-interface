@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class ComponentName(object):
 
     def __repr__(self):
@@ -8,7 +9,7 @@ class ComponentName(object):
         )
 
     def begin(self, event):
-        self.vals = [ ]
+        self.vals = []
         event.componentName = self.vals
 
         self.vals[:] = [event.config.component.name]
@@ -36,7 +37,7 @@ class FuncOnNumpyArrays(object):
         )
 
     def begin(self, event):
-        self.out = [ ]
+        self.out = []
         self._attach_to_event(event)
 
     def _attach_to_event(self, event):
@@ -44,10 +45,10 @@ class FuncOnNumpyArrays(object):
 
     def event(self, event):
         self._attach_to_event(event)
-        self.out[:] = self.func(*[np.array(getattr(event, n)) for n in self.src_arrays])
+        self.out[:] = self.func(*[np.array(getattr(event, n))
+                                  for n in self.src_arrays])
 
 
 class DivideNumpyArrays(FuncOnNumpyArrays):
     def __init__(self, src_arrays, out_name):
         super(self.__class__, self).__init__(src_arrays, out_name, np.divide)
-

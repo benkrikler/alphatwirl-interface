@@ -18,7 +18,7 @@ class EventBuilder(object):
         )
 
     def __call__(self):
-        events = at.roottree.BEvents(self.tree, maxEvents = self.max_events)
+        events = at.roottree.BEvents(self.tree, maxEvents=self.max_events)
         return events
 
 

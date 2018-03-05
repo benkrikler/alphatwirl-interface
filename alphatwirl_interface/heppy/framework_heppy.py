@@ -2,22 +2,19 @@
 import os
 import sys
 import logging
-
 import alphatwirl
+from parallel import build_parallel
+from profile_func import profile_func
 
-##__________________________________________________________________||
-import logging
+# __________________________________________________________________||
 logger = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(stream=sys.stdout)
 log_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 log_handler.setFormatter(log_formatter)
 logger.addHandler(log_handler)
+# __________________________________________________________________||
 
-##__________________________________________________________________||
-from parallel import build_parallel
-from profile_func import profile_func
 
-##__________________________________________________________________||
 class FrameworkHeppy(object):
     """A simple framework for using alphatwirl
 
@@ -35,43 +32,45 @@ class FrameworkHeppy(object):
         profile_out_path (bool): path to store the result of the profile. stdout if None
 
     """
+
     def __init__(self, outdir, heppydir,
-                 isdata = False,
-                 force = False, quiet = False,
-                 parallel_mode = 'multiprocessing',
-                 htcondor_job_desc_extra = [ ],
-                 n_processes = 8,
-                 user_modules = (),
-                 max_events_per_dataset = -1, max_events_per_process = -1,
-                 profile = False, profile_out_path = None
-    ):
+                 isdata=False,
+                 force=False, quiet=False,
+                 parallel_mode='multiprocessing',
+                 htcondor_job_desc_extra=[],
+                 n_processes=8,
+                 user_modules=(),
+                 max_events_per_dataset=-1, max_events_per_process=-1,
+                 profile=False, profile_out_path=None
+                 ):
         self.parallel = build_parallel(
-            parallel_mode = parallel_mode,
-            quiet = quiet,
-            n_processes = n_processes,
-            user_modules = user_modules,
-            htcondor_job_desc_extra = htcondor_job_desc_extra
+            parallel_mode=parallel_mode,
+            quiet=quiet,
+            n_processes=n_processes,
+            user_modules=user_modules,
+            htcondor_job_desc_extra=htcondor_job_desc_extra
         )
         self.outdir = outdir
         self.heppydir = heppydir
         self.isdata = isdata
-        self.force =  force
+        self.force = force
         self.max_events_per_dataset = max_events_per_dataset
         self.max_events_per_process = max_events_per_process
         self.profile = profile
         self.profile_out_path = profile_out_path
 
-    def run(self, 
+    def run(self,
             reader_collector_pairs,
             components=None,
-            analyzerName = 'treeProducerSusyAlphaT',
-            fileName = 'tree.root',
-            treeName = 'tree'
-    ):
+            analyzerName='treeProducerSusyAlphaT',
+            fileName='tree.root',
+            treeName='tree'
+            ):
 
         self._begin()
         try:
-            loop = self._configure(components, reader_collector_pairs, analyzerName, fileName, treeName)
+            loop = self._configure(
+                components, reader_collector_pairs, analyzerName, fileName, treeName)
             ret_val = self._run(loop)
         except KeyboardInterrupt:
             logger = logging.getLogger(__name__)
@@ -103,9 +102,9 @@ class FrameworkHeppy(object):
         tbl_dataset_path = os.path.join(self.outdir, 'tbl_dataset.txt')
         if self.force or not os.path.exists(tbl_dataset_path):
             tblDataset = alphatwirl.heppyresult.TblComponentConfig(
-                outPath = tbl_dataset_path,
-                columnNames = ('dataset', ),
-                keys = ('dataset', ),
+                outPath=tbl_dataset_path,
+                columnNames=('dataset', ),
+                keys=('dataset', ),
             )
             component_readers.add(tblDataset)
 
@@ -114,9 +113,9 @@ class FrameworkHeppy(object):
             tbl_xsec_path = os.path.join(self.outdir, 'tbl_xsec.txt')
             if self.force or not os.path.exists(tbl_xsec_path):
                 tblXsec = alphatwirl.heppyresult.TblComponentConfig(
-                    outPath = tbl_xsec_path,
-                    columnNames = ('xsec', ),
-                    keys = ('xSection', ),
+                    outPath=tbl_xsec_path,
+                    columnNames=('xsec', ),
+                    keys=('xSection', ),
                 )
                 component_readers.add(tblXsec)
 
@@ -125,47 +124,51 @@ class FrameworkHeppy(object):
             tbl_nevt_path = os.path.join(self.outdir, 'tbl_nevt.txt')
             if self.force or not os.path.exists(tbl_nevt_path):
                 tblNevt = alphatwirl.heppyresult.TblCounter(
-                    outPath = tbl_nevt_path,
-                    columnNames = ('nevt', 'nevt_sumw'),
-                    analyzerName = 'skimAnalyzerCount',
-                    fileName = 'SkimReport.txt',
-                    levels = ('All Events', 'Sum Weights')
+                    outPath=tbl_nevt_path,
+                    columnNames=('nevt', 'nevt_sumw'),
+                    analyzerName='skimAnalyzerCount',
+                    fileName='SkimReport.txt',
+                    levels=('All Events', 'Sum Weights')
                 )
                 component_readers.add(tblNevt)
 
         # event loop
         reader = alphatwirl.loop.ReaderComposite()
-        collector = alphatwirl.loop.CollectorComposite(self.parallel.progressMonitor.createReporter())
+        collector = alphatwirl.loop.CollectorComposite(
+            self.parallel.progressMonitor.createReporter())
         for r, c in reader_collector_pairs:
             reader.add(r)
             collector.add(c)
-        eventLoopRunner = alphatwirl.loop.MPEventLoopRunner(self.parallel.communicationChannel)
+        eventLoopRunner = alphatwirl.loop.MPEventLoopRunner(
+            self.parallel.communicationChannel)
         eventBuilderConfigMaker = alphatwirl.heppyresult.EventBuilderConfigMaker(
-            analyzerName = analyzerName,
-            fileName = fileName,
-            treeName = treeName,
+            analyzerName=analyzerName,
+            fileName=fileName,
+            treeName=treeName,
         )
         datasetIntoEventBuildersSplitter = alphatwirl.loop.DatasetIntoEventBuildersSplitter(
-            EventBuilder = alphatwirl.heppyresult.EventBuilder,
-            eventBuilderConfigMaker = eventBuilderConfigMaker,
-            maxEvents = self.max_events_per_dataset,
-            maxEventsPerRun = self.max_events_per_process
+            EventBuilder=alphatwirl.heppyresult.EventBuilder,
+            eventBuilderConfigMaker=eventBuilderConfigMaker,
+            maxEvents=self.max_events_per_dataset,
+            maxEventsPerRun=self.max_events_per_process
         )
         eventReader = alphatwirl.loop.EventsInDatasetReader(
-            eventLoopRunner = eventLoopRunner,
-            reader = reader,
-            collector = collector,
-            split_into_build_events = datasetIntoEventBuildersSplitter
+            eventLoopRunner=eventLoopRunner,
+            reader=reader,
+            collector=collector,
+            split_into_build_events=datasetIntoEventBuildersSplitter
         )
         component_readers.add(eventReader)
 
-        if components == ['all']: components = None
+        if components == ['all']:
+            components = None
         heppyResult = alphatwirl.heppyresult.HeppyResult(
-            path = self.heppydir,
-            componentNames = components,
-            componentHasTheseFiles = [analyzerName]
+            path=self.heppydir,
+            componentNames=components,
+            componentHasTheseFiles=[analyzerName]
         )
-        componentLoop = alphatwirl.heppyresult.ComponentLoop(heppyResult, component_readers)
+        componentLoop = alphatwirl.heppyresult.ComponentLoop(
+            heppyResult, component_readers)
 
         return componentLoop
 
@@ -173,13 +176,15 @@ class FrameworkHeppy(object):
         if not self.profile:
             ret_val = componentLoop()
         else:
-            ret_val = profile_func(func = componentLoop, profile_out_path = self.profile_out_path)
+            ret_val = profile_func(
+                func=componentLoop, profile_out_path=self.profile_out_path)
 
         # Only the last entry in the list of component_readers will be the user-requested data
-        # Other entries are the other tables that we create to help book-keeping, and which are saved to file automatically
+        # Other entries are the other tables that we create to help book-keeping,
+        # and which are saved to file automatically
         return ret_val[-1]
 
     def _end(self):
         self.parallel.end()
 
-##__________________________________________________________________||
+# __________________________________________________________________||

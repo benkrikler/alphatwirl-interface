@@ -1,10 +1,12 @@
-import operator 
+import operator
+from functools import reduce
 
 
 class WeightCalculatorProduct(object):
     """
     return the product of multiple weights
     """
+
     def __init__(self, weight_list):
         self.weight_list = weight_list
 
