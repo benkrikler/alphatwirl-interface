@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  test:
+    image: kreczko/alphatwirl_interface
+    build:
+      context: ci
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      - "PATH=/opt/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    command: bash -c 'source /code/ci/setup.sh && source /code/ci/test.sh'
