@@ -95,8 +95,10 @@ def _process_single_selection(stage_name, selection, lambda_arg="ev", aliases=No
     if not isinstance(selection, six.string_types):
         # Might sometimes be given other things, like bools, etc
         return str(selection)
-    elif re.match(selection, "{}\s*\.".format(lambda_arg)):
-        return "{}: {}".format(lambda_arg, selection)
+    else:
+        regex = r"{}\s*\.".format(lambda_arg)
+        if re.search(regex, selection):
+            return "{}: {}".format(lambda_arg, selection)
 
     raise BadCutflowConfig("{}: Issue pre-processing selection '{}'".format(stage_name, selection))
 
