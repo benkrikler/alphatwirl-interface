@@ -37,7 +37,7 @@ setup_requirements = [
 test_requirements = [
     'flake8',
     'pytest',
-    'yaml',
+    'pyyaml',
     # TODO: put package test requirements here
 ]
 
