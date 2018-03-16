@@ -38,6 +38,7 @@ test_requirements = [
     'flake8',
     'pytest',
     'pyyaml',
+    'pandas',
     # TODO: put package test requirements here
 ]
 
