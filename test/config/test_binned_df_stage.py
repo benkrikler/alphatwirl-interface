@@ -105,22 +105,39 @@ def test_BinnedDataframe(binned_df_1, tmpdir):
     assert binned_df_1.output_dir == str(tmpdir)
 
 
-def test_BinnedDataframe_apply_description_1(binned_df_1, config_1):
+@pytest.fixture
+def binned_df_1_configured_1(binned_df_1, config_1):
     binned_df_1.apply_description(**config_1)
-    assert len(binned_df_1._binning) == 2
-    assert len(binned_df_1._binning[0]) == 4
-    assert len(binned_df_1._weights) == 2
+    return binned_df_1
 
 
-def test_BinnedDataframe_apply_description_2(binned_df_1, config_2):
+@pytest.fixture
+def binned_df_1_configured_2(binned_df_1, config_2):
     binned_df_1.apply_description(**config_2)
-    assert len(binned_df_1._binning) == 3
-    assert len(binned_df_1._binning[0]) == 4
-    assert len(binned_df_1._weights) == 2
+    return binned_df_1
 
 
-def test_BinnedDataframe_as_rc_pairs(binned_df_1, config_1):
-    binned_df_1.apply_description(**config_1)
-    rc_pairs = binned_df_1.as_rc_pairs()
-    assert len(rc_pairs) == len(config_1["weights"])
+def test_BinnedDataframe_apply_description_1(binned_df_1_configured_1):
+    assert len(binned_df_1_configured_1._binning) == 2
+    assert len(binned_df_1_configured_1._binning[0]) == 4
+    assert len(binned_df_1_configured_1._weights) == 2
+
+
+def test_BinnedDataframe_apply_description_2(binned_df_1_configured_2):
+    assert len(binned_df_1_configured_2._binning) == 3
+    assert len(binned_df_1_configured_2._binning[0]) == 4
+    assert len(binned_df_1_configured_2._weights) == 2
+
+
+def test_BinnedDataframe_as_rc_pairs_1(binned_df_1_configured_1):
+    rc_pairs = binned_df_1_configured_1.as_rc_pairs()
+    assert isinstance(rc_pairs, list)
+    assert len(rc_pairs) == 2
+    assert all(map(lambda x: isinstance(x[0], Reader), rc_pairs))
+
+
+def test_BinnedDataframe_as_rc_pairs_2(binned_df_1_configured_2):
+    rc_pairs = binned_df_1_configured_2.as_rc_pairs()
+    assert isinstance(rc_pairs, list)
+    assert len(rc_pairs) == 2
     assert all(map(lambda x: isinstance(x[0], Reader), rc_pairs))

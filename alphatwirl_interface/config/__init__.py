@@ -1,21 +1,21 @@
 import base_stage
 import binned_df_stage
 import cutflow_stage
-import os
 
 
 __all__ = ["read_yaml"]
 
 
-from .dict_config import Sequence
+from .dict_config import sequence_from_dict
 
 
 def read_yaml(cfg_filename, output_dir=None):
     import yaml
     with open(cfg_filename, "r") as infile:
         cfg = yaml.load(infile)
-    if output_dir:
-        dict_cfg["output_dir"] = output_dir
 
-    sequence = Sequence(**dict_cfg)
-    return sequence.to_reader_collector_pairs()
+    # Override the output_dir in the config file if this function is given one
+    if output_dir:
+        cfg["output_dir"] = output_dir
+
+    return sequence_from_dict(**cfg)
