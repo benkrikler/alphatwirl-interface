@@ -9,6 +9,7 @@ from .config_exceptions import BadAlphaTwirlInterfaceConfig
 from alphatwirl.configure import TableConfigCompleter, TableFileNameComposer
 from alphatwirl_interface.completions import complete
 from alphatwirl.binning import Binning, Echo
+from alphatwirl_interface.weighters import WeightCalculatorSingleAttr, WeightCalculatorConst
 
 
 __all__ = ["BinnedDataframe"]
@@ -21,7 +22,7 @@ class BadBinnedDataframeConfig(BadAlphaTwirlInterfaceConfig):
 class BinnedDataframe(BaseStage):
     def apply_description(self, binning, weights=None):
         self._binning = _create_binning_list(self.name, binning)
-        self._weights = _create_weights(weights)
+        self._weights = _create_weights(self.name, weights)
 
     def as_rc_pairs(self):
         if not hasattr(self, "_reader_collector_pair"):
@@ -100,15 +101,24 @@ def _create_one_dimension(stage_name, _in, _out, _bins=None, _index=None):
     return (str(_in), str(_out), bin_obj, _index)
 
 
-def _create_weights(weights):
+def _create_weights(stage_name, weights):
     if weights is None:
         return None
     if isinstance(weights, list):
-        return {str(w): w for w in weights}
+        return {str(w): _create_one_weight(stage_name, w) for w in weights}
     elif isinstance(weights, dict):
-            return weights
+        return {k: _create_one_weight(stage_name, w) for k, w in weights.items()}
     # else we've got a single, scalar value
-    return {"weighted": weights}
+    return {"weighted": _create_one_weight(stage_name, weights)}
+
+
+def _create_one_weight(stage_name, weight):
+    if isinstance(weight, six.string_types):
+        # Assume this is an event attribute
+        return WeightCalculatorSingleAttr(weight)
+    elif isinstance(weight, (float, six.integer_types)):
+        return WeightCalculatorConst(weight)
+    raise BadBinnedDataframeConfig("{}: Unknown weight type {} (type={})".format(stage_name, weight, type(weight)))
 
 
 class WithInsertTableFileNameComposer():

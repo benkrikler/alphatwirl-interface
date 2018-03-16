@@ -4,6 +4,7 @@ from alphatwirl.binning import Binning, Echo
 from alphatwirl.summary import Reader
 from alphatwirl.loop import Collector
 
+from alphatwirl_interface.weighters import WeightCalculatorSingleAttr, WeightCalculatorConst
 
 @pytest.fixture
 def bins_alphaT():
@@ -68,22 +69,20 @@ def test__create_binning_list(bins_region, bins_alphaT):
     assert len(binning) == 2
 
 
-def test__create_weights(weight_list):
-    weights = bdfs._create_weights(weight_list)
-    weight_keys = list(weights.keys())
-    weight_values = list(weights.values())
+def test__create_weights_list(weight_list):
+    name = "test__create_weights_list"
+    weights = bdfs._create_weights(name, weight_list)
     assert len(weights) == 2
-    assert weight_keys[weight_values.index(1)] == "1"
-    assert weight_keys[weight_values.index("weight")] == "weight"
+    assert isinstance(weights["1"], WeightCalculatorConst)
+    assert isinstance(weights["weight"], WeightCalculatorSingleAttr)
 
 
-def test__create_weights(weight_dict):
-    weights = bdfs._create_weights(weight_dict)
-    weight_keys = list(weights.keys())
-    weight_values = list(weights.values())
+def test__create_weights_dict(weight_dict):
+    name = "test__create_weights_dict"
+    weights = bdfs._create_weights(name, weight_dict)
     assert len(weights) == 2
-    assert weight_keys[weight_values.index(1)] == "none"
-    assert weight_keys[weight_values.index("weight")] == "weighted"
+    assert isinstance(weights["none"], WeightCalculatorConst)
+    assert isinstance(weights["weighted"], WeightCalculatorSingleAttr)
 
 
 @pytest.fixture
