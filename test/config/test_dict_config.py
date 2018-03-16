@@ -83,4 +83,5 @@ def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
 
 def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
     rc_pairs = dict_config.sequence_from_dict(a_stage_list, output_dir=str(tmpdir), **all_stage_configs)
-    assert len(rc_pairs) == 3
+    # 3 stages in list, but one stage makes 2 pairs, so look for 4 rc pairs in total
+    assert len(rc_pairs) == 4
