@@ -104,22 +104,71 @@ def selection_file_alias(tmpdir):
 
 
 def test__load_selection_file(selection_file):
-    selection, aliases = cfs._load_selection_file(selection_file)
+    name = "test__load_selection_file"
+    selection, aliases = cfs._load_selection_file(name, selection_file)
     assert aliases is None
     assert len(selection) == 1
     assert len(selection["All"]) == 2
 
 
 def test__load_selection_file_aliases(selection_file_alias):
-    selection, aliases = cfs._load_selection_file(selection_file_alias)
+    name = "test__load_selection_file_aliases"
+    selection, aliases = cfs._load_selection_file(name, selection_file_alias)
     assert isinstance(aliases, dict)
     assert len(aliases) == 1
     assert len(selection) == 1
     assert len(selection["All"]) == 2
 
 
-#def test_apply_description(self, selection_file=None, selection=None, aliases=None,
+def test__create_weights():
+    name = "test__create_weights"
+    assert cfs._create_weights(name, weights=None) is None
+    assert cfs._create_weights(name, weights="some_attribute") == "some_attribute"
+    assert cfs._create_weights(name, weights=["some_attribute"]) == "some_attribute"
+    with pytest.raises(cfs.MultipleWeightedSelectionsNotImplemented) as ex:
+        cfs._create_weights(name, weights=["some", "attribute"])
+
+
+@pytest.fixture
+def cutflow_1(tmpdir):
+    return cfs.CutFlow("cutflow_1", str(tmpdir))
+
+
+def test_CutFlow(cutflow_1, tmpdir):
+    assert cutflow_1.name == "cutflow_1"
+    assert cutflow_1.output_dir == str(tmpdir)
+
+
+def test_apply_description_1(cutflow_1, selection_dict_1):
+    config = dict(selection=selection_dict_1, aliases=dict(some_alias="ev.something == 1"),
+                counter_weights="an_attribrute")
+    cutflow_1.apply_description(**config)
+    assert len(cutflow_1.selection) == 1
+    assert list(cutflow_1.selection.keys()) == ["All"]
+    assert cutflow_1._weights == "an_attribrute"
+
+
+def test_apply_description_file(cutflow_1, selection_file):
+    config = dict(selection_file=selection_file, aliases=dict(some_alias="ev.something == 1"),
+                counter_weights="an_attribrute")
+    cutflow_1.apply_description(**config)
+    assert len(cutflow_1.selection) == 1
+    assert list(cutflow_1.selection.keys()) == ["All"]
+    assert cutflow_1._weights == "an_attribrute"
+
+
+def test_apply_description_raises(cutflow_1, selection_file, selection_dict_1):
+    config = dict(selection_file=selection_file, selection=selection_dict_1,
+                  aliases=dict(some_alias="ev.something == 1"), counter_weights="an_attribrute")
+    with pytest.raises(cfs.BadCutflowConfig) as ex:
+        cutflow_1.apply_description(**config)
+    assert "Both selection and selection_file" in str(ex)
+
+    config = dict(aliases=dict(some_alias="ev.something == 1"), counter_weights="an_attribrute")
+    with pytest.raises(cfs.BadCutflowConfig) as ex:
+        cutflow_1.apply_description(**config)
+    assert "Neither selection nor selection_file" in str(ex)
+
+
 #def test_as_rc_pairs(self):
 #def test__create_rc_pairs(self):
-#def test__load_selection_file(selection_file):
-#def test__create_weights(stage_name, weights):

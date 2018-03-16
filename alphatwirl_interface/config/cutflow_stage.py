@@ -31,10 +31,10 @@ class CutFlow(BaseStage):
             raise BadCutflowConfig("{}: Both selection and selection_file given. Choose one!".format(self.name))
 
         if selection_file:
-            selection, aliases = self._load_selection_file(selection_file)
-        self.selection = self._prepare_selection(self.name, selection, lambda_arg, aliases)
+            selection, aliases = _load_selection_file(self.name, selection_file)
+        self.selection = _prepare_selection(self.name, selection, lambda_arg, aliases)
 
-        self._weights = _create_weights(weights)
+        self._weights = _create_weights(self.name, counter_weights)
 
     def as_rc_pairs(self):
         if hasattr(self, "_reader_collector_pair"):
@@ -45,16 +45,18 @@ class CutFlow(BaseStage):
         return [Selection(self.selection, os.path.join(self.output_dir, self.output_filename))]
 
 
-def _load_selection_file(selection_file):
+def _load_selection_file(stage_name, selection_file):
     import yaml
     with open(selection_file, "r") as infile:
         cfg = yaml.load(infile)
     if "selection" not in cfg:
-        raise BadSelectionFile("No `selection` section in selection file '{}'".format(selection_file))
+        msg = "{}: No `selection` section in selection file '{}'"
+        raise BadSelectionFile(msg.format(stage_name, selection_file))
     selection = cfg.pop("selection")
     aliases = cfg.pop("aliases", None)
     if cfg:
-        raise BadSelectionFile("Unknown sections in selection file '{}': {}".format(selection_file, cfg.keys()))
+        msg = "{}: Unknown sections in selection file '{}': {}"
+        raise BadSelectionFile(msg.format(stage_name, selection_file, cfg.keys()))
     return selection, aliases
 
 

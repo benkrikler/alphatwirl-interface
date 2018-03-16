@@ -100,8 +100,9 @@ def binned_df_1(tmpdir):
     return bdfs.BinnedDataframe("binned_df_1", str(tmpdir))
 
 
-def test_BinnedDataframe(binned_df_1):
+def test_BinnedDataframe(binned_df_1, tmpdir):
     assert binned_df_1.name == "binned_df_1"
+    assert binned_df_1.output_dir == str(tmpdir)
 
 
 def test_BinnedDataframe_apply_description_1(binned_df_1, config_1):
