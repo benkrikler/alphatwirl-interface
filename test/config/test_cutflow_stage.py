@@ -18,13 +18,13 @@ def selection_cut_alias():
 
 
 def test__process_single_selection_1(selection_cut_1):
-    out_selection = cfs._process_single_selection("test__process_single_selection", 
+    out_selection = cfs._process_single_selection("test__process_single_selection",
                                                   selection_cut_1, "ev")
     assert out_selection == "ev: ev.jet_pt[0] > 0"
 
 
 def test__process_single_selection_alias(selection_cut_alias):
-    aliases = dict(some_alias = "ev.something == 1")
+    aliases = dict(some_alias="ev.something == 1")
     out_selection = cfs._process_single_selection("test__process_single_selection_alias",
                                                   selection_cut_alias, "ev", aliases=aliases)
     assert out_selection == "ev: ev.something == 1"
@@ -33,7 +33,7 @@ def test__process_single_selection_alias(selection_cut_alias):
 def test__process_single_selection_raises(selection_cut_alias):
     name = "test__process_single_selection_raises"
     with pytest.raises(cfs.BadCutflowConfig) as ex:
-        out_selection = cfs._process_single_selection(name, selection_cut_alias, "ev", aliases={1:"blargwd"})
+        cfs._process_single_selection(name, selection_cut_alias, "ev", aliases={1: "blargwd"})
     assert "Issue pre-processing selection" in str(ex.value)
 
 
@@ -125,7 +125,7 @@ def test__create_weights():
     assert cfs._create_weights(name, weights=None) is None
     assert cfs._create_weights(name, weights="some_attribute") == "some_attribute"
     assert cfs._create_weights(name, weights=["some_attribute"]) == "some_attribute"
-    with pytest.raises(cfs.MultipleWeightedSelectionsNotImplemented) as ex:
+    with pytest.raises(cfs.MultipleWeightedSelectionsNotImplemented):
         cfs._create_weights(name, weights=["some", "attribute"])
 
 
@@ -141,7 +141,7 @@ def test_CutFlow(cutflow_1, tmpdir):
 
 def test_apply_description_1(cutflow_1, selection_dict_1):
     config = dict(selection=selection_dict_1, aliases=dict(some_alias="ev.something == 1"),
-                counter_weights="an_attribrute")
+                  counter_weights="an_attribrute")
     cutflow_1.apply_description(**config)
     assert len(cutflow_1.selection) == 1
     assert list(cutflow_1.selection.keys()) == ["All"]
@@ -150,7 +150,7 @@ def test_apply_description_1(cutflow_1, selection_dict_1):
 
 def test_apply_description_file(cutflow_1, selection_file):
     config = dict(selection_file=selection_file, aliases=dict(some_alias="ev.something == 1"),
-                counter_weights="an_attribrute")
+                  counter_weights="an_attribrute")
     cutflow_1.apply_description(**config)
     assert len(cutflow_1.selection) == 1
     assert list(cutflow_1.selection.keys()) == ["All"]
@@ -173,7 +173,7 @@ def test_apply_description_raises(cutflow_1, selection_file, selection_dict_1):
 def test_as_rc_pairs(cutflow_1, selection_file):
     from alphatwirl.selection.modules.with_count import AllwCount
     config = dict(selection_file=selection_file, aliases=dict(some_alias="ev.something == 1"),
-                counter_weights="an_attribrute")
+                  counter_weights="an_attribrute")
     cutflow_1.apply_description(**config)
     rc_pairs = cutflow_1.as_rc_pairs()
     assert isinstance(rc_pairs, list)

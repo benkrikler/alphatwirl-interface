@@ -35,8 +35,7 @@ class BinnedDataframe(BaseStage):
         base_cfg = dict(keyAttrNames=keyAttrNames,
                         keyOutColumnNames=keyOutColumnNames,
                         binnings=binnings,
-                        keyIndices=keyIndices
-                       )
+                        keyIndices=keyIndices)
 
         df_configs = {}
         if not self._weights:

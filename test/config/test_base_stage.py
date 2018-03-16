@@ -19,7 +19,6 @@ def test_BaseStage(base_1):
     assert "can't set attribute" in str(ex)
 
 
-
 def test_apply_description_raises(base_1):
     some_cfg = dict(selection="junk", something_else=True)
     with pytest.raises(NotImplementedError):

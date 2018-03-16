@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 import six
 import collections
-#import base_stage
 from .base_stage import BaseStage
 from .config_exceptions import BadAlphaTwirlInterfaceConfig
 import os
@@ -57,7 +56,6 @@ def _make_stage(index, output_dir, stage_cfg, default_type="BinnedDataframe"):
         msg = "Bad stage configuration, for stage {} in stages list".format(index)
         logger.error(msg + "\n Each stage config must be either a single string or a dictionary")
         raise BadStagesDescription(msg)
-
 
     # Find the actual concrete class based on the string
     stage_class = None

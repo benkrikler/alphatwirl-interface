@@ -5,19 +5,19 @@ from alphatwirl_interface.config.cutflow_stage import CutFlow
 
 
 def test__make_stage_string(tmpdir):
-     stage = dict_config._make_stage(1, tmpdir, "just_a_stage_name", default_type="BinnedDataframe")
-     assert isinstance(stage, BinnedDataframe)
-     assert stage.name == "just_a_stage_name"
+    stage = dict_config._make_stage(1, tmpdir, "just_a_stage_name", default_type="BinnedDataframe")
+    assert isinstance(stage, BinnedDataframe)
+    assert stage.name == "just_a_stage_name"
 
 
 @pytest.fixture
 def binned_df_cfg():
-    return {"my_first_stage": {"type":  "BinnedDataframe"}}
+    return {"my_first_stage": {"type": "BinnedDataframe"}}
 
 
 @pytest.fixture
 def cutflow_cfg():
-    return {"my_second_stage": {"type":  "CutFlow"}}
+    return {"my_second_stage": {"type": "CutFlow"}}
 
 
 def test__make_stage_binned_df(tmpdir, binned_df_cfg):
@@ -34,13 +34,13 @@ def test__make_stage_cutflow(tmpdir, cutflow_cfg):
 
 def test__make_stage_raises(tmpdir):
     with pytest.raises(dict_config.BadStagesDescription) as ex:
-        cfg = {"my_third_stage": {"type":  "bad_stage_type"}}
+        cfg = {"my_third_stage": {"type": "bad_stage_type"}}
         dict_config._make_stage(3, tmpdir, cfg)
     assert "Unknown type" in str(ex)
 
     with pytest.raises(dict_config.BadStagesDescription) as ex:
-        cfg = {"my_third_stage": {"type":  "CutFlow"}, 
-               "bad_fourth_stage": {"type":  "BinnedDataframe"}}
+        cfg = {"my_third_stage": {"type": "CutFlow"},
+               "bad_fourth_stage": {"type": "BinnedDataframe"}}
         dict_config._make_stage(4, tmpdir, cfg)
     assert "More than one key" in str(ex)
 
@@ -51,11 +51,11 @@ def a_stage_list(binned_df_cfg, cutflow_cfg):
 
 
 def test__create_stages(a_stage_list, tmpdir):
-     stages = dict_config._create_stages(a_stage_list, tmpdir)
-     assert len(stages) == 3
-     assert isinstance(stages[0], BinnedDataframe)
-     assert isinstance(stages[1], CutFlow)
-     assert isinstance(stages[2], BinnedDataframe)
+    stages = dict_config._create_stages(a_stage_list, tmpdir)
+    assert len(stages) == 3
+    assert isinstance(stages[0], BinnedDataframe)
+    assert isinstance(stages[1], CutFlow)
+    assert isinstance(stages[2], BinnedDataframe)
 
 
 @pytest.fixture
@@ -70,7 +70,9 @@ def all_stage_configs():
     selection_cut_1 = "ev.jet_pt[0] > 0"
     selection_cut_2 = "ev.nJet > 1"
     selection = dict(All=[selection_cut_1, dict(Any=dict(Not=selection_cut_2))])
-    cutflow_cfg = dict(selection=selection, aliases=dict(some_alias="ev.something == 1"), counter_weights="an_attribrute")
+    cutflow_cfg = dict(selection=selection,
+                       aliases=dict(some_alias="ev.something == 1"),
+                       counter_weights="an_attribrute")
     return dict(my_first_stage=binned_df_cfg_1, my_second_stage=cutflow_cfg, my_third_stage=binned_df_cfg_2)
 
 
@@ -81,3 +83,4 @@ def test__configure_stages(a_stage_list, all_stage_configs, tmpdir):
 
 def test_sequence_from_dict(a_stage_list, all_stage_configs, tmpdir):
     rc_pairs = dict_config.sequence_from_dict(a_stage_list, output_dir=str(tmpdir), **all_stage_configs)
+    assert len(rc_pairs) == 3

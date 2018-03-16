@@ -8,7 +8,7 @@ from .config_exceptions import BadAlphaTwirlInterfaceConfig
 from ..selection import Selection
 
 
-__all__ = ["BinnedDataframe"]
+__all__ = ["CutFlow"]
 
 
 class BadCutflowConfig(BadAlphaTwirlInterfaceConfig):
@@ -25,6 +25,7 @@ class MultipleWeightedSelectionsNotImplemented(UserWarning):
 
 class CutFlow(BaseStage):
     output_filename = "cut_flow.txt"
+
     def apply_description(self, selection_file=None, selection=None, aliases=None,
                           lambda_arg="ev", counter=True, counter_weights=None):
         if not selection and not selection_file:

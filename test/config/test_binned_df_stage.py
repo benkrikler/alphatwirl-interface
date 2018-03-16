@@ -29,12 +29,13 @@ def weight_list():
 def weight_dict():
     return dict(none=1, weighted="weight")
 
+
 def test__create_one_region(bins_region):
     cfg = {"_" + k: v for k, v in bins_region.items()}
     _in, _out, _bins, _index = bdfs._create_one_dimension("test__create_one_region", **cfg)
     assert _in == "REGION"
     assert _out == "region"
-    assert _index == None
+    assert _index is None
     assert isinstance(_bins, Echo)
 
 
@@ -43,9 +44,9 @@ def test__create_one_dimension_aT(bins_alphaT):
     _in, _out, _bins, _index = bdfs._create_one_dimension("test__create_one_dimension_aT", **cfg)
     assert _in == "AlphaT"
     assert _out == "alphaT"
-    assert _index == None
+    assert _index is None
     assert isinstance(_bins, Binning)
-    assert _bins.boundaries == tuple([i/20. for i in range(0, 51, 5)])
+    assert _bins.boundaries == tuple([i / 20. for i in range(0, 51, 5)])
     assert _bins.underflow_bin == float("-inf")
     assert _bins.overflow_bin == 2.5
 
