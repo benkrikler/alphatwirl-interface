@@ -37,7 +37,9 @@ class CutFlow(BaseStage):
             selection, aliases = _load_selection_file(self.name, selection_file)
         self.selection = _prepare_selection(self.name, selection, lambda_arg, aliases)
 
-        self._weights = _create_weights(self.name, counter_weights)
+        self._counter = counter
+        if self._counter:
+            self._weights = _create_weights(self.name, counter_weights)
 
     def as_rc_pairs(self):
         if not hasattr(self, "_reader_collector_pair"):
@@ -45,7 +47,11 @@ class CutFlow(BaseStage):
         return self._reader_collector_pair
 
     def _create_rc_pairs(self):
-        return [Selection(self.selection, os.path.join(self.output_dir, self.output_filename))]
+        if self._counter:
+            out_file = os.path.join(self.output_dir, self.output_filename)
+            return [Selection(self.selection, out_file)]
+        else:
+            return [Selection(self.selection)]
 
 
 def _load_selection_file(stage_name, selection_file):
