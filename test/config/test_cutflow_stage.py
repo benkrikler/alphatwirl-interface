@@ -170,5 +170,12 @@ def test_apply_description_raises(cutflow_1, selection_file, selection_dict_1):
     assert "Neither selection nor selection_file" in str(ex)
 
 
-#def test_as_rc_pairs(self):
-#def test__create_rc_pairs(self):
+def test_as_rc_pairs(cutflow_1, selection_file):
+    from alphatwirl.selection.modules.with_count import AllwCount
+    config = dict(selection_file=selection_file, aliases=dict(some_alias="ev.something == 1"),
+                counter_weights="an_attribrute")
+    cutflow_1.apply_description(**config)
+    rc_pairs = cutflow_1.as_rc_pairs()
+    assert isinstance(rc_pairs, list)
+    assert len(rc_pairs) == 1
+    assert isinstance(rc_pairs[0][0], AllwCount)

@@ -1,9 +1,11 @@
 from __future__ import absolute_import
 import re
 import six
+import os
 import numpy as np
 from .base_stage import BaseStage
 from .config_exceptions import BadAlphaTwirlInterfaceConfig
+from ..selection import Selection
 
 
 __all__ = ["BinnedDataframe"]
@@ -37,7 +39,7 @@ class CutFlow(BaseStage):
         self._weights = _create_weights(self.name, counter_weights)
 
     def as_rc_pairs(self):
-        if hasattr(self, "_reader_collector_pair"):
+        if not hasattr(self, "_reader_collector_pair"):
             self._reader_collector_pair = self._create_rc_pairs()
         return self._reader_collector_pair
 
