@@ -6,6 +6,7 @@ from alphatwirl.loop import Collector
 
 from alphatwirl_interface.weighters import WeightCalculatorSingleAttr, WeightCalculatorConst
 
+
 @pytest.fixture
 def bins_alphaT():
     return {"in": "AlphaT", "out": "alphaT", "bins": dict(nbins=10, low=0, high=2.5)}
