@@ -5,7 +5,7 @@ import logging
 
 import alphatwirl
 
-##__________________________________________________________________||
+# __________________________________________________________________||
 import logging
 logger = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(stream=sys.stdout)
@@ -13,11 +13,13 @@ log_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 log_handler.setFormatter(log_formatter)
 logger.addHandler(log_handler)
 
-##__________________________________________________________________||
+# __________________________________________________________________||
 from parallel import build_parallel
 from profile_func import profile_func
 
-##__________________________________________________________________||
+# __________________________________________________________________||
+
+
 class FrameworkNanoAOD(object):
     """A simple framework for using alphatwirl
 
@@ -35,25 +37,26 @@ class FrameworkNanoAOD(object):
         profile_out_path (bool): path to store the result of the profile. stdout if None
 
     """
+
     def __init__(self, outdir,
-                 force = False, quiet = False,
-                 parallel_mode = 'multiprocessing',
-                 htcondor_job_desc_extra = [ ],
-                 n_processes = 8,
-                 user_modules = (),
-                 max_events_per_dataset = -1, max_events_per_process = -1,
-                 max_files_per_run = 1,
-                 profile = False, profile_out_path = "prof.txt", #None
-    ):
+                 force=False, quiet=False,
+                 parallel_mode='multiprocessing',
+                 htcondor_job_desc_extra=[],
+                 n_processes=8,
+                 user_modules=(),
+                 max_events_per_dataset=-1, max_events_per_process=-1,
+                 max_files_per_run=1,
+                 profile=False, profile_out_path="prof.txt",  # None
+                 ):
         self.parallel = build_parallel(
-            parallel_mode = parallel_mode,
-            quiet = quiet,
-            n_processes = n_processes,
-            user_modules = user_modules,
-            htcondor_job_desc_extra = htcondor_job_desc_extra,
+            parallel_mode=parallel_mode,
+            quiet=quiet,
+            n_processes=n_processes,
+            user_modules=user_modules,
+            htcondor_job_desc_extra=htcondor_job_desc_extra,
         )
         self.outdir = outdir
-        self.force =  force
+        self.force = force
         self.max_events_per_dataset = max_events_per_dataset
         self.max_events_per_process = max_events_per_process
         self.max_files_per_run = max_files_per_run
@@ -64,7 +67,7 @@ class FrameworkNanoAOD(object):
             reader_collector_pairs,
             components=None,
             tree_name='Events'
-    ):
+            ):
 
         self._begin()
         try:
@@ -138,26 +141,26 @@ class FrameworkNanoAOD(object):
             collector.add(c)
         event_loop_runner = alphatwirl.loop.MPEventLoopRunner(self.parallel.communicationChannel)
         event_builder_config_maker = alphatwirl.nanoaod.EventBuilderConfigMaker(
-            treeName = tree_name,
+            treeName=tree_name,
         )
         dataset_into_event_builders_splitter = alphatwirl.loop.DatasetIntoEventBuildersSplitter(
-            EventBuilder = alphatwirl.nanoaod.EventBuilder,
-            eventBuilderConfigMaker = event_builder_config_maker,
-            maxEvents = self.max_events_per_dataset,
-            maxEventsPerRun = self.max_events_per_process,
-            maxFilesPerRun = self.max_files_per_run,
+            EventBuilder=alphatwirl.nanoaod.EventBuilder,
+            eventBuilderConfigMaker=event_builder_config_maker,
+            maxEvents=self.max_events_per_dataset,
+            maxEventsPerRun=self.max_events_per_process,
+            maxFilesPerRun=self.max_files_per_run,
         )
         event_reader = alphatwirl.loop.EventsInDatasetReader(
-            eventLoopRunner = event_loop_runner,
-            reader = reader,
-            collector = collector,
-            split_into_build_events = dataset_into_event_builders_splitter
+            eventLoopRunner=event_loop_runner,
+            reader=reader,
+            collector=collector,
+            split_into_build_events=dataset_into_event_builders_splitter
         )
         component_readers.add(event_reader)
 
         #if components == ['all']: components = None
         nanoaod_result = alphatwirl.nanoaod.NanoAODResult(
-            component_df = components,
+            component_df=components,
         )
         component_loop = alphatwirl.nanoaod.ComponentLoop(nanoaod_result, component_readers)
 
@@ -167,13 +170,14 @@ class FrameworkNanoAOD(object):
         if not self.profile:
             ret_val = component_loop()
         else:
-            ret_val = profile_func(func = component_loop, profile_out_path = self.profile_out_path)
+            ret_val = profile_func(func=component_loop, profile_out_path=self.profile_out_path)
 
         # Only the last entry in the list of component_readers will be the user-requested data
-        # Other entries are the other tables that we create to help book-keeping, and which are saved to file automatically
+        # Other entries are the other tables that we create to help book-keeping,
+        # and which are saved to file automatically
         return ret_val[-1]
 
     def _end(self):
         self.parallel.end()
 
-##__________________________________________________________________||
+# __________________________________________________________________||
