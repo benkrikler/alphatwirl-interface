@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+
 def profile_func(func, profile_out_path=None):
     import cProfile
     import pstats
