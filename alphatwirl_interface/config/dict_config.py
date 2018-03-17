@@ -50,7 +50,7 @@ def _make_stage(index, output_dir, stage_cfg, default_type="BinnedDataframe"):
             msg = "More than one key in dictionary spec for stage {} in stages list".format(index)
             logger.error(msg + "\n dictionary given: {}".format(stage_cfg))
             raise BadStagesDescription(msg)
-        name, args = stage_cfg.items()[0]
+        [(name, args)] = stage_cfg.items()
         stage_type = args.pop("type", default_type)
     else:
         msg = "Bad stage configuration, for stage {} in stages list".format(index)
