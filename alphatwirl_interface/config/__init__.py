@@ -1,6 +1,7 @@
-import base_stage
-import binned_df_stage
-import cutflow_stage
+from __future__ import absolute_import
+from . import base_stage
+from . import binned_df_stage
+from . import cutflow_stage
 
 
 __all__ = ["read_yaml"]
