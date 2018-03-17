@@ -49,7 +49,7 @@ class BinnedDataframe(BaseStage):
                     config["weight"] = weights
                 df_configs[name] = config
 
-            name_composer = WithInsertTableFileNameComposer(TableFileNameComposer(), df_configs.keys())
+            name_composer = WithInsertTableFileNameComposer(TableFileNameComposer(), list(df_configs.keys()))
         tableConfigCompleter = TableConfigCompleter(createOutFileName=name_composer, defaultOutDir=self.output_dir)
 
         return complete(df_configs.values(), tableConfigCompleter)
