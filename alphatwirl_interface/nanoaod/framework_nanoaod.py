@@ -1,23 +1,15 @@
-# Tai Sakuma <tai.sakuma@cern.ch>
-import os
-import sys
-import logging
-
+from .parallel import build_parallel
+from .profile_func import profile_func
 import alphatwirl
 
-# __________________________________________________________________||
+import os
+import sys
 import logging
 logger = logging.getLogger(__name__)
 log_handler = logging.StreamHandler(stream=sys.stdout)
 log_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
 log_handler.setFormatter(log_formatter)
 logger.addHandler(log_handler)
-
-# __________________________________________________________________||
-from parallel import build_parallel
-from profile_func import profile_func
-
-# __________________________________________________________________||
 
 
 class FrameworkNanoAOD(object):
@@ -158,7 +150,6 @@ class FrameworkNanoAOD(object):
         )
         component_readers.add(event_reader)
 
-        #if components == ['all']: components = None
         nanoaod_result = alphatwirl.nanoaod.NanoAODResult(
             component_df=components,
         )

@@ -1,4 +1,4 @@
-from alphatwirl_interface.nanoaod.framework_nanoaod import FrameworkNanoAOD
+from .framework_nanoaod import FrameworkNanoAOD
 
 
 def build_job_manager(outdir, **kwargs):
@@ -19,7 +19,8 @@ def build_job_manager(outdir, **kwargs):
     #        'expected_runtime_minutes = 10',
     #        'job_machine_attrs = Machine',
     #        'job_machine_attrs_history_length = 4',
-    #        'requirements = target.machine =!= MachineAttrMachine1 && target.machine =!= MachineAttrMachine2 &&  target.machine =!= MachineAttrMachine3',
+    #        'requirements = target.machine =!= MachineAttrMachine1 && ' +\
+    #        'target.machine =!= MachineAttrMachine2 &&  target.machine =!= MachineAttrMachine3',
     #        'periodic_hold = JobStatus == 2 && CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)',
     #        'periodic_hold_subcode = 1',
     #        'periodic_release = HoldReasonCode == 3 && HoldReasonSubCode == 1 && JobRunCount < 3',
