@@ -41,7 +41,7 @@ class CutFlow(BaseStage):
         self._weights = None
         self._weight_name = ""
         if self._counter:
-            self._weights, self._weight_name  = _create_weights(self.name, counter_weights)
+            self._weights, self._weight_name = _create_weights(self.name, counter_weights)
 
     def as_rc_pairs(self):
         if not hasattr(self, "_reader_collector_pair"):
