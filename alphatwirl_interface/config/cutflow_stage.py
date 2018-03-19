@@ -24,7 +24,7 @@ class MultipleWeightedSelectionsNotImplemented(UserWarning):
 
 
 class CutFlow(BaseStage):
-    output_filename = "cut_flow.txt"
+    output_filename = "cut_flow{}.txt"
 
     def apply_description(self, selection_file=None, selection=None, aliases=None,
                           lambda_arg="ev", counter=True, counter_weights=None):
@@ -38,8 +38,10 @@ class CutFlow(BaseStage):
         self.selection = _prepare_selection(self.name, selection, lambda_arg, aliases)
 
         self._counter = counter
+        self._weights = None
+        self._weight_name = ""
         if self._counter:
-            self._weights = _create_weights(self.name, counter_weights)
+            self._weights, self._weight_name  = _create_weights(self.name, counter_weights)
 
     def as_rc_pairs(self):
         if not hasattr(self, "_reader_collector_pair"):
@@ -47,11 +49,14 @@ class CutFlow(BaseStage):
         return self._reader_collector_pair
 
     def _create_rc_pairs(self):
+        out_file = None
         if self._counter:
-            out_file = os.path.join(self.output_dir, self.output_filename)
-            return [Selection(self.selection, out_file)]
-        else:
-            return [Selection(self.selection)]
+            weight_name = ""
+            if self._weight_name:
+                weight_name = "--" + self._weight_name
+            out_file = self.output_filename.format(weight_name)
+            out_file = os.path.join(self.output_dir, out_file)
+        return [Selection(self.selection, out_file, self._weights)]
 
 
 def _load_selection_file(stage_name, selection_file):
@@ -115,11 +120,23 @@ def _process_single_selection(stage_name, selection, lambda_arg="ev", aliases=No
 
 
 def _create_weights(stage_name, weights):
-    if weights is None or isinstance(weights, six.string_types):
-        return weights
+    if weights is None:
+        return 1, "unweighted"
+    if isinstance(weights, six.string_types):
+        return weights, weights
+    if isinstance(weights, (float, six.string_types)):
+        return weights, "weight_const"
 
-    if isinstance(weights, (tuple, list)):
+    try:
         if len(weights) != 1:
             raise MultipleWeightedSelectionsNotImplemented("{}: Sorry!  We'll add this soon...".format(stage_name))
-        return weights[0]
+    except AttributeError:
+        pass
+    else:
+        if isinstance(weights, (tuple, list)):
+            return _create_weights(stage_name, weights[0])
+        if isinstance(weights, dict):
+            [(name, weights)] = weights.items()
+            weights, _ = _create_weights(stage_name, weights)
+            return weights, name
     raise BadCutflowConfig("{}: Cannot process weight specification".format(stage_name))

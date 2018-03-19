@@ -1,9 +1,9 @@
 from collections import Sequence
-from alphatwirl_interface.cut_flows import cut_flow, cut_flow_with_counter
+from alphatwirl_interface.cut_flows import cut_flow, cut_flow_with_counter, cut_flow_with_weighted_counter
 import six
 
 
-def Selection(steps={}, cutflow_file=None):
+def Selection(steps={}, cutflow_file=None, weight_attr=None):
     '''
         This class ties together several modules from alphatwirl to
         bring a simplified Selection experience.
@@ -34,9 +34,10 @@ def Selection(steps={}, cutflow_file=None):
     '''
     rc_pair = None
     if cutflow_file:
-        rc_pair = cut_flow_with_counter(
-            steps, cutflow_file,
-        )
+        if weight_attr:
+            rc_pair = cut_flow_with_weighted_counter(steps, cutflow_file, weight_attr)
+        else:
+            rc_pair = cut_flow_with_counter(steps, cutflow_file)
     else:
         rc_pair = cut_flow(steps)
     return rc_pair[0]

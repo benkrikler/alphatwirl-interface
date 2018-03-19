@@ -122,9 +122,10 @@ def test__load_selection_file_aliases(selection_file_alias):
 
 def test__create_weights():
     name = "test__create_weights"
-    assert cfs._create_weights(name, weights=None) is None
-    assert cfs._create_weights(name, weights="some_attribute") == "some_attribute"
-    assert cfs._create_weights(name, weights=["some_attribute"]) == "some_attribute"
+    assert cfs._create_weights(name, weights=None) == (1, "unweighted")
+    assert cfs._create_weights(name, weights="some_attribute") == ("some_attribute", "some_attribute")
+    assert cfs._create_weights(name, weights=["some_attribute"]) == ("some_attribute", "some_attribute")
+    assert cfs._create_weights(name, weights={"1": "one"}) == ("one", "1")
     with pytest.raises(cfs.MultipleWeightedSelectionsNotImplemented):
         cfs._create_weights(name, weights=["some", "attribute"])
 
@@ -171,11 +172,11 @@ def test_apply_description_raises(cutflow_1, selection_file, selection_dict_1):
 
 
 def test_as_rc_pairs(cutflow_1, selection_file):
-    from alphatwirl.selection.modules.with_count import AllwCount
+    from alphatwirl.selection.modules.with_count_weight import AllwCountWeight
     config = dict(selection_file=selection_file, aliases=dict(some_alias="ev.something == 1"),
                   counter_weights="an_attribrute")
     cutflow_1.apply_description(**config)
     rc_pairs = cutflow_1.as_rc_pairs()
     assert isinstance(rc_pairs, list)
     assert len(rc_pairs) == 1
-    assert isinstance(rc_pairs[0][0], AllwCount)
+    assert isinstance(rc_pairs[0][0], AllwCountWeight)
