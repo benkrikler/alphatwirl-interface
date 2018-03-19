@@ -24,16 +24,16 @@ class Parallel(object):
         self.communicationChannel.end()
 
 
-def build_parallel(parallel_mode, quiet = True, n_processes = 4, user_modules = [ ], htcondor_job_desc_extra = [ ], **kwargs):
+def build_parallel(parallel_mode, quiet=True, n_processes=4, user_modules=[], htcondor_job_desc_extra=[], **kwargs):
 
     default_parallel_mode = 'multiprocessing'
 
     if parallel_mode in ('subprocess', 'htcondor', 'sge'):
         return build_parallel_dropbox(
-            parallel_mode = parallel_mode,
-            quiet = quiet,
-            user_modules = user_modules,
-            htcondor_job_desc_extra = htcondor_job_desc_extra,
+            parallel_mode=parallel_mode,
+            quiet=quiet,
+            user_modules=user_modules,
+            htcondor_job_desc_extra=htcondor_job_desc_extra,
             **kwargs
         )
 
@@ -43,10 +43,10 @@ def build_parallel(parallel_mode, quiet = True, n_processes = 4, user_modules = 
             parallel_mode, default_parallel_mode
         ))
 
-    return build_parallel_multiprocessing(quiet = quiet, n_processes = n_processes)
+    return build_parallel_multiprocessing(quiet=quiet, n_processes=n_processes)
 
 
-def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc_extra = [ ], **kwargs):
+def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc_extra=[], **kwargs):
     tmpdir = '_ccsp_temp'
     user_modules = set(user_modules)
     user_modules.add('alphatwirl_interface')
@@ -62,7 +62,7 @@ def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc
             progressBar = alphatwirl.progressbar.ProgressPrint()
         progressMonitor = alphatwirl.progressbar.BProgressMonitor(presentation=progressBar)
     if parallel_mode == 'htcondor':
-        dispatcher = alphatwirl.concurrently.HTCondorJobSubmitter(job_desc_extra = htcondor_job_desc_extra)
+        dispatcher = alphatwirl.concurrently.HTCondorJobSubmitter(job_desc_extra=htcondor_job_desc_extra)
     elif parallel_mode == 'sge':
         q = "hep.q" if "queue" not in kwargs else kwargs["queue"]
         t = 10800 if "time" not in kwargs else kwargs["time"]
@@ -70,12 +70,12 @@ def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc
     else:
         dispatcher = alphatwirl.concurrently.SubprocessRunner()
     workingArea = alphatwirl.concurrently.WorkingArea(
-        dir = tmpdir,
-        python_modules = list(user_modules)
+        dir=tmpdir,
+        python_modules=list(user_modules)
     )
     dropbox = alphatwirl.concurrently.TaskPackageDropbox(
-        workingArea = workingArea,
-        dispatcher = dispatcher
+        workingArea=workingArea,
+        dispatcher=dispatcher
     )
     communicationChannel = alphatwirl.concurrently.CommunicationChannel(dropbox=dropbox)
 
@@ -83,5 +83,6 @@ def build_parallel_dropbox(parallel_mode, quiet, user_modules, htcondor_job_desc
 
 
 def build_parallel_multiprocessing(quiet, n_processes):
-    progressMonitor, communicationChannel = alphatwirl.configure.build_progressMonitor_communicationChannel(quiet = quiet, processes = n_processes)
+    progressMonitor, communicationChannel = alphatwirl.configure.build_progressMonitor_communicationChannel(
+        quiet=quiet, processes=n_processes)
     return Parallel(progressMonitor, communicationChannel)

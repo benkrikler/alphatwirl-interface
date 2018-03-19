@@ -21,7 +21,9 @@ pep8:
 	@pep8 --exclude=.git alphatwirl_interface
 
 flake8:
-	@flake8 $(shell file -p bin/* |awk -F: '/python.*text/{print $$1}') alphatwirl_interface test --ignore=F401 --max-line-length=120
+	@flake8 $(shell file -p bin/* |awk -F: '/python.*text/{print $$1}') alphatwirl_interface --ignore=F401 --max-line-length=120
+	# using imported fixtures causes problems with flake8
+	@flake8 $(shell file -p bin/* |awk -F: '/python.*text/{print $$1}') test --ignore=F401,F811 --max-line-length=120
 
 test: test-code flake8
 
