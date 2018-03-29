@@ -1,7 +1,7 @@
 import pytest
 
 from alphatwirl_interface import Selection
-from alphatwirl.selection.modules import AllwCount
+from alphatwirl.selection.modules import AllwCount, All
 from alphatwirl.loop import Collector, NullCollector
 from alphatwirl.collector import WriteListToFile
 
@@ -45,7 +45,7 @@ def test_cutflow_file(example_selection_with_cutflow_file):
 def test_no_cutflow_file(example_selection):
     s = example_selection
     assert len(s) == 2
-    assert isinstance(s[0], AllwCount)
+    assert isinstance(s[0], All)
     assert isinstance(s[1], NullCollector)
 
 
