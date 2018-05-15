@@ -51,10 +51,10 @@ class CutFlow(BaseStage):
     def _create_rc_pairs(self):
         out_file = None
         if self._counter:
-            weight_name = ""
+            name = "_" + self.name
             if self._weight_name:
-                weight_name = "--" + self._weight_name
-            out_file = self.output_filename.format(weight_name)
+                name += "--" + self._weight_name
+            out_file = self.output_filename.format(name)
             out_file = os.path.join(self.output_dir, out_file)
         return [Selection(self.selection, out_file, self._weights)]
 
