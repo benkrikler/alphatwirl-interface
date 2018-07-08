@@ -22,7 +22,7 @@ def test_make_one_scribbler_WithArgs():
     assert scribbler.an_int == 1
     assert scribbler.a_str == "hi"
 
-    scribbler = scrs._make_one_scribbler("test_make_one_scribbler_WithArgs", mod, 
+    scribbler = scrs._make_one_scribbler("test_make_one_scribbler_WithArgs", mod,
                                          "FakeScribblerArgs", args=args, index=4)
     assert isinstance(scribbler, mod.FakeScribblerArgs)
     assert scribbler.an_int == 1
@@ -31,11 +31,10 @@ def test_make_one_scribbler_WithArgs():
 
 @pytest.fixture
 def config_list_1():
-    cfgs = [
-            "FakeScribbler",
+    cfgs = ["FakeScribbler",
             {"FakeScribblerArgs": {"an_int": 4, "a_str": "word"}},
             "FakeScribbler"
-           ]
+            ]
     return cfgs
 
 
