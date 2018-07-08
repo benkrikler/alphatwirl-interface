@@ -28,6 +28,7 @@ def test_make_one_scribbler_WithArgs():
     assert scribbler.an_int == 1
     assert scribbler.a_str == "hi"
 
+
 @pytest.fixture
 def config_list_1():
     cfgs = [
@@ -36,6 +37,7 @@ def config_list_1():
             "FakeScribbler"
            ]
     return cfgs
+
 
 def test_make_scribblers_list(config_list_1):
     scribblers = scrs._make_scribblers("test_make_scribblers", mod, config_list_1)
