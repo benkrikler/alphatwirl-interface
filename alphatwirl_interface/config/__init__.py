@@ -2,9 +2,10 @@ from __future__ import absolute_import
 from . import base_stage
 from . import binned_df_stage
 from . import cutflow_stage
+from . import scribbler_stage
 
 
-__all__ = ["read_yaml"]
+__all__ = ["read_yaml", "read_dict"]
 
 
 from .dict_config import sequence_from_dict
@@ -19,4 +20,8 @@ def read_yaml(cfg_filename, output_dir=None):
     if output_dir:
         cfg["output_dir"] = output_dir
 
+    return sequence_from_dict(**cfg)
+
+
+def read_dict(cfg):
     return sequence_from_dict(**cfg)

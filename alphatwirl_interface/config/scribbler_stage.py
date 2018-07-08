@@ -17,9 +17,6 @@ class BadScribblerConfig(BadAlphaTwirlInterfaceConfig):
 
 class Scribbler(BaseStage):
     def apply_description(self, module, scribblers):
-        #package, module = os.path.splitext(module)
-        #print "BEK", module, package
-        #mod = importlib.import_module(module, package=package)
         mod = importlib.import_module(module)
         self._scribblers = _make_scribblers(self.name, mod, scribblers)
 
